@@ -52,7 +52,7 @@ router.route("/").post(scopeCheck("school-create"), async (req, res) => {
 router.route("/:_id").patch(scopeCheck("school-edit"), async (req, res) => {
   patchSchool()
     .then((school) => res.json({ status: true }))
-    .catch((err) => errorMessage(res, err));
+    .catch((err) => errorMessage(res, err.message));
 });
 
 async function patchSchool(req) {

@@ -9,7 +9,7 @@ const Role = require("../models/role.model");
 router.route("/create").post(scopeCheck("role-create"), async (req, res) => {
   createRole(req)
     .then((role) => res.json({ status: true }))
-    .catch((err) => errorMessage(res, err));
+    .catch((err) => errorMessage(res, err.message));
 });
 
 router.route("/getList").get(scopeCheck("role-get"), async (req, res) => {
@@ -27,7 +27,7 @@ router
   .post(scopeCheck("role-edit"), async (req, res) => {
     updateRole(req)
       .then((role) => res.json({ status: true }))
-      .catch((err) => errorMessage(res, err));
+      .catch((err) => errorMessage(res, err.message));
   });
 
 router

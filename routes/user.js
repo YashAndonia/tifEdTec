@@ -5,7 +5,7 @@ const errorMessage = require("../commons/errorMessage");
 const scopeCheck = require("../middleware/scopeCheck");
 
 //get model
-const { User } = require("../models/user.model");
+const { User, validate } = require("../models/user.model");
 
 router.route("/").get(scopeCheck("user-get"), async (req, res) => {
   User.find()
@@ -35,27 +35,33 @@ router.route("/:_id").patch(scopeCheck("user-edit"), async (req, res) => {
       res.json({ status: true });
     })
     .catch((err) => {
-      errorMessage(res, err);
+      errorMessage(res, err.message);
     });
 });
 //sign up User
 router.route("/signup").post(async (req, res) => {
-  signUpUser(req)
-    .then(async (user) => {
-      const token = await user.generateAuthToken();
-      res.header("x-auth-token", token).json({ status: true });
-    })
-    .catch((err) => {
-      console.log(err);
-      errorMessage(res, err);
-    });
+  //validating the user
+  const { error } = validate(req.body);
+  if (error) {
+    errorMessage(res, error.message);
+  } else {
+    signUpUser(req)
+      .then(async (user) => {
+        const token = await user.generateAuthToken();
+        res.header("x-auth-token", token).json({ status: true });
+      })
+      .catch((err) => {
+        console.log(err);
+        errorMessage(res, err.message);
+      });
+  }
 });
 
 //signin user:
 router.post("/signin", async (req, res) => {
   signInUser(req)
     .then((toSend) => res.json(toSend))
-    .catch((err) => errorMessage(res, err));
+    .catch((err) => errorMessage(res, err.message));
 });
 
 async function signInUser(req) {

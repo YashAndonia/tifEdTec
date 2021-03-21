@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const jwt = require("jsonwebtoken");
+const Joi = require("joi");
 const config = require("config");
 const Role = require("./role.model");
 
@@ -43,16 +44,20 @@ userSchema.methods.generateAuthToken = async function () {
   const token = jwt.sign(payload, config.get("jwtPrivateKey"));
   return token;
 };
-/*
+
+//example of validation
 function validateUser(user) {
   const schema = {
     email: Joi.string().required(),
-    mobile: Joi.string().required().length(10), //checking if valid number or not
+    mobile: Joi.string().required(),
+    first_name: Joi.string(),
+    last_name: Joi.string(),
+    password: Joi.string(),
+    roleId: Joi.string(),
   };
 
   return Joi.validate(user, schema);
 }
-*/
 const User = mongoose.model("User", userSchema);
 exports.User = User;
-// exports.validate = validateUser;
+exports.validate = validateUser;
